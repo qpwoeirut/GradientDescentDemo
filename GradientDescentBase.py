@@ -52,4 +52,9 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
         raise NotImplementedError("this should be implemented in a subclass!")
 
     def function(self, x: float) -> float:
+        """
+        Defines the function to graph, which is also the function we'll run gradient descent on
+        :param x: the x-value on the graph
+        :return: the y-value (equivalent to f(x))
+        """
         return self.coef * math.prod([x - zero for zero in self.zeros])
