@@ -3,13 +3,14 @@ from manimlib import *
 
 
 class GradientDescentBase(Scene, metaclass=ABCMeta):
-    def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, start_x: float = 1, **kwargs):
+    def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, start_x: float = 1, steps: int = 20, **kwargs):
         super().__init__(**kwargs)
 
         self.zeros = zeros
         self.coef = coef
         self.dx = dx
         self.start_x = start_x
+        self.steps = steps
 
         self.min_x = math.ceil(min(self.zeros + [-1]) - 2)
         self.max_x = math.ceil(max(self.zeros + [1]) + 2)
@@ -36,14 +37,14 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
         x_tracker = ValueTracker(cur_x)
         f_always(dot.move_to, lambda: axes.i2gp(x_tracker.get_value(), graph))
 
-        for _ in range(20):
-            cur_x += self.gradient_descent(cur_x)
+        for step in range(self.steps):
+            cur_x += self.gradient_descent(cur_x, step)
             self.play(x_tracker.animate.set_value(cur_x), run_time=0.5)
 
         self.wait()
 
     @abstractmethod
-    def gradient_descent(self, x: float) -> float:
+    def gradient_descent(self, x: float, step: int) -> float:
         """
         Takes an x-value and returns how much to step in the x direction.
         Should implement a gradient descent method that works on self.function
