@@ -1,17 +1,15 @@
+from abc import ABCMeta
 from manimlib import *
 
-RANDOM_GRAPH = ([-2, 1, 5, 5], 0.005)
-OSCILLATING_GRAPH = ([0, 0], 1)
-TWO_MINIMA_GRAPH = ([-4, 0, 2, 2], 0.05)
 
-
-class GradientDescent(Scene):
-    def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, **kwargs):
+class GradientDescentBase(Scene, metaclass=ABCMeta):
+    def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, start_x: float = 1, **kwargs):
         super().__init__(**kwargs)
 
         self.zeros = zeros
         self.coef = coef
         self.dx = dx
+        self.start_x = start_x
 
         self.min_x = math.ceil(min(self.zeros + [-1]) - 2)
         self.max_x = math.ceil(max(self.zeros + [1]) + 2)
@@ -28,7 +26,7 @@ class GradientDescent(Scene):
         self.play(ShowCreation(graph))
         self.wait()
 
-        cur_x = 2
+        cur_x = self.start_x
 
         # dot that follows graph
         dot = Dot(color=RED)
@@ -38,24 +36,19 @@ class GradientDescent(Scene):
         x_tracker = ValueTracker(cur_x)
         f_always(dot.move_to, lambda: axes.i2gp(x_tracker.get_value(), graph))
 
-        for _ in range(25):
+        for _ in range(20):
             cur_x += self.gradient_descent(cur_x)
-            self.play(x_tracker.animate.set_value(cur_x), run_time=0.4)
+            self.play(x_tracker.animate.set_value(cur_x), run_time=0.5)
 
         self.wait()
 
-    # takes a function and the current point, returns how much to step in a direction
-    def gradient_descent(self, x: int) -> float:
-        derivative = (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)
-        return -derivative
+    @abstractmethod
+    def gradient_descent(self, x: float) -> float:
+        """
+        Takes an x-value and returns how much to step in the x direction.
+        Should implement a gradient descent method that works on self.function
+        """
+        raise NotImplementedError("this should be implemented in a subclass!")
 
     def function(self, x: float) -> float:
         return self.coef * math.prod([x - zero for zero in self.zeros])
-
-
-def main():
-    GradientDescent(*TWO_MINIMA_GRAPH).run()
-
-
-if __name__ == "__main__":
-    main()
