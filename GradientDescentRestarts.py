@@ -6,17 +6,17 @@ from example_graphs import *
 from GradientDescentBase import GradientDescentBase
 
 
-class GradientDescentConstantStepSize(GradientDescentBase):
+class GradientDescentRestarts(GradientDescentBase):
     def __init__(self, **kwargs):
-        super().__init__(*OSCILLATING_GRAPH, **kwargs)
+        super().__init__(*RANDOM_GRAPH, start_x=[3, 1, 6], show_derivative=False, **kwargs)
 
     def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
         derivative = (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)
-        return derivative, -derivative
+        return derivative, -derivative * (self.steps - step) / self.steps
 
 
 def main():
-    GradientDescentConstantStepSize().run()
+    GradientDescentRestarts().run()
 
 
 if __name__ == "__main__":

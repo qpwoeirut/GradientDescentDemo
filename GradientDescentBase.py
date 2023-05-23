@@ -6,14 +6,14 @@ from manimlib import *
 
 
 class GradientDescentBase(Scene, metaclass=ABCMeta):
-    def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, start_x: float = 1, steps: int = 20,
+    def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, start_x: float or list = 1, steps: int = 16,
                  noisy: bool = False, show_derivative: bool = True, **kwargs):
         super().__init__(**kwargs)
 
         self.zeros = zeros
         self.coef = coef
         self.dx = dx
-        self.start_x = start_x
+        self.start_x = start_x if isinstance(start_x, list) else [start_x]
         self.steps = steps
         self.noisy = noisy
         self.show_derivative = show_derivative
@@ -26,8 +26,9 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
 
     def construct(self) -> None:
         graph = self.setup_scene()
-        self.run_gradient_descent(graph)
-        self.wait(1)
+        for x in self.start_x:
+            self.run_gradient_descent(graph, x)
+            self.wait(1)
 
     def setup_scene(self) -> ParametricCurve:
         self.play(Write(self.axes, lag_ratio=0.01, run_time=1))
@@ -39,8 +40,8 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
 
         return graph
 
-    def run_gradient_descent(self, graph: ParametricCurve):
-        cur_x = self.start_x
+    def run_gradient_descent(self, graph: ParametricCurve, start_x: float):
+        cur_x = start_x
 
         # dot that follows graph
         dot = Dot(color=RED)
