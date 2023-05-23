@@ -61,20 +61,20 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
             derivative = round(derivative, ndigits=5)
             step_value = round(step_value, ndigits=5)
 
-            speedup = 0.2 * (max(0, step - 2) / self.steps)**0.5  # speedup increases quickly, then slows down
+            speedup = (max(0, step - 2) / self.steps)**0.5  # speedup increases quickly, then slows down
             if self.show_derivative:
                 derivative_text = Text(f"Derivative = {derivative}\nStep = {step_value}", font_size=40, font="serif",
                                        color=GREEN)
                 derivative_text.move_to(dot)
                 derivative_text.shift(np.array([0, 1, 0]))
-                self.play(Write(derivative_text, run_time=1))
-                self.wait(0.5 - speedup)
+                self.play(Write(derivative_text, run_time=1 - 0.5 * speedup))
+                self.wait(0.5 - 0.2 * speedup)
 
                 cur_x += step_value
-                self.play(x_tracker.animate.set_value(cur_x), FadeOut(derivative_text), run_time=0.6 - speedup)
+                self.play(x_tracker.animate.set_value(cur_x), FadeOut(derivative_text), run_time=0.6 - 0.2 * speedup)
             else:
                 cur_x += step_value
-                self.play(x_tracker.animate.set_value(cur_x), run_time=0.6 - speedup)
+                self.play(x_tracker.animate.set_value(cur_x), run_time=0.6 - 0.2 * speedup)
 
             self.wait()
 
