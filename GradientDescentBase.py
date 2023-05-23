@@ -58,8 +58,7 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
             self.wait(0.5)
 
             cur_x += step_value
-            self.play(x_tracker.animate.set_value(cur_x), run_time=0.8)
-            self.play(FadeOut(derivative_text))
+            self.play(x_tracker.animate.set_value(cur_x), FadeOut(derivative_text), run_time=0.6)
             self.wait()
 
         dot.set_color(GREEN)
