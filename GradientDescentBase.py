@@ -62,6 +62,7 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
             self.wait()
 
         dot.set_color(GREEN)
+        self.wait()
 
     @abstractmethod
     def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
