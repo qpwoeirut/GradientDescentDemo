@@ -1,4 +1,5 @@
-import sys, os
+import os
+import sys
 sys.path.append(os.getcwd())  # running manimgl from command line breaks imports on Stanley's computer w/o this line
 
 from example_graphs import *
