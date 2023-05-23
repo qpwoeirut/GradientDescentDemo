@@ -13,7 +13,7 @@ class GradientDescentMomentum(GradientDescentBase):
         self.prev_dx = None
 
     def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
-        derivative = (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)
+        derivative = self.derivative(x)
 
         dx = -derivative if not self.prev_dx else -derivative + (self.prev_dx * self.momentum)
         self.prev_dx = dx

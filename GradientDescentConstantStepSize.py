@@ -11,7 +11,7 @@ class GradientDescentConstantStepSize(GradientDescentBase):
         super().__init__(*OSCILLATING_GRAPH, **kwargs)
 
     def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
-        derivative = (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)
+        derivative = self.derivative(x)
         return derivative, -derivative
 
 

@@ -100,3 +100,6 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
             noise = Random(x=seed).randint(-2, 2) * (0.1 - abs(seed - x))  # maximum of abs(seed - x) is 0.1
             y += noise
         return y
+
+    def derivative(self, x: float) -> float:
+        return (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)

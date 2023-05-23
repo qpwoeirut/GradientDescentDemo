@@ -11,7 +11,7 @@ class GradientDescentRestarts(GradientDescentBase):
         super().__init__(*RANDOM_GRAPH, start_x=[3, 1, 6], show_derivative=False, **kwargs)
 
     def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
-        derivative = (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)
+        derivative = self.derivative(x)
         return derivative, -derivative * (self.steps - step) / self.steps
 
 
