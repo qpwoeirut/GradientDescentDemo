@@ -17,7 +17,7 @@ class GradientDescentMomentum(GradientDescentBase):
 
 
 def main():
-    GradientDescentMomentum(*TWO_MINIMA_GRAPH, start_x=3, momentum=0.7).run()
+    GradientDescentMomentum(*RANDOM_GRAPH, dx=1e-3, noisy=True).run()
 
 
 if __name__ == "__main__":

@@ -1,10 +1,13 @@
 import math
 from abc import ABCMeta, abstractmethod
+from random import Random
+
 from manimlib import *
 
 
 class GradientDescentBase(Scene, metaclass=ABCMeta):
-    def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, start_x: float = 1, steps: int = 20, **kwargs):
+    def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, start_x: float = 1, steps: int = 20,
+                 noisy: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         self.zeros = zeros
@@ -12,6 +15,7 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
         self.dx = dx
         self.start_x = start_x
         self.steps = steps
+        self.noisy = noisy
 
         self.min_x = math.ceil(min(self.zeros + [-1]) - 2)
         self.max_x = math.ceil(max(self.zeros + [1]) + 2)
@@ -46,7 +50,8 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
             derivative = round(derivative, ndigits=5)
             step_value = round(step_value, ndigits=5)
 
-            derivative_text = Text(f"Derivative = {derivative}\nStep = {step_value}", font_size=40, font="serif", color=GREEN)
+            derivative_text = Text(f"Derivative = {derivative}\nStep = {step_value}", font_size=40, font="serif",
+                                   color=GREEN)
             derivative_text.move_to(dot)
             derivative_text.shift(np.array([0, 1, 0]))
             self.play(Write(derivative_text, run_time=1))
@@ -73,4 +78,8 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
         :param x: the x-value on the graph
         :return: the y-value (equivalent to f(x))
         """
-        return self.coef * math.prod([x - zero for zero in self.zeros])
+        y = self.coef * math.prod([x - zero for zero in self.zeros])
+        if self.noisy:
+            # use x as seed for new Random instance to ensure same value is generated
+            y += Random(x=x).randint(-1, 1) * 0.05
+        return y
