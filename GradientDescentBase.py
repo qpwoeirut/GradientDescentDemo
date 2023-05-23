@@ -81,5 +81,7 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
         y = self.coef * math.prod([x - zero for zero in self.zeros])
         if self.noisy:
             # use x as seed for new Random instance to ensure same value is generated
-            y += Random(x=x).randint(-1, 1) * 0.05
+            seed = round(x / 4, ndigits=1) * 4
+            noise = Random(x=seed).randint(-2, 2) * (0.1 - abs(seed - x))  # maximum of abs(seed - x) is 0.1
+            y += noise
         return y
