@@ -8,6 +8,6 @@ To get rid of a warning about `Unsupported element type: <class 'svgelements.svg
 
 To run an animation and save it as a GIF:
 `source venv/bin/activate`
-`manimgl ClassName.py ClassName -w -i -l --file_name out.gif --frame_rate 20`
+`manimgl ClassName.py ClassName -w -i -l --file_name out.gif --frame_rate 15`
 
-Assume all GIFs have an FPS of 20 unless specified otherwise in the file name.
+Assume all GIFs have an FPS of 15 unless specified otherwise in the file name.
