@@ -7,7 +7,7 @@ from manimlib import *
 
 class GradientDescentBase(Scene, metaclass=ABCMeta):
     def __init__(self, zeros: list[float], coef: float, dx: float = 1e-6, start_x: float = 1, steps: int = 20,
-                 noisy: bool = False, **kwargs):
+                 noisy: bool = False, show_derivative: bool = True, **kwargs):
         super().__init__(**kwargs)
 
         self.zeros = zeros
@@ -16,53 +16,67 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
         self.start_x = start_x
         self.steps = steps
         self.noisy = noisy
+        self.show_derivative = show_derivative
 
-        self.min_x = math.ceil(min(self.zeros + [-1]) - 2)
-        self.max_x = math.ceil(max(self.zeros + [1]) + 2)
-        self.max_y = math.ceil(max(self.function(self.min_x + 1), self.function(self.max_x - 1)))
+        min_x = math.ceil(min(self.zeros + [-1]) - 2)
+        max_x = math.ceil(max(self.zeros + [1]) + 2)
+        max_y = math.ceil(max(self.function(min_x + 1), self.function(max_x - 1)))
+        self.axes = Axes((min_x, max_x), (-max_y, max_y))
+        self.axes.add_coordinate_labels()
 
     def construct(self) -> None:
-        axes = Axes((self.min_x, self.max_x), (-self.max_y, self.max_y))
-        axes.add_coordinate_labels()
+        graph = self.setup_scene()
+        self.run_gradient_descent(graph)
+        self.wait(1)
 
-        self.play(Write(axes, lag_ratio=0.01, run_time=1))
+    def setup_scene(self) -> ParametricCurve:
+        self.play(Write(self.axes, lag_ratio=0.01, run_time=1))
 
-        graph = axes.get_graph(self.function)
+        graph = self.axes.get_graph(self.function)
         graph.set_stroke(BLUE)
         self.play(ShowCreation(graph))
         self.wait()
 
+        return graph
+
+    def run_gradient_descent(self, graph: ParametricCurve):
         cur_x = self.start_x
 
         # dot that follows graph
         dot = Dot(color=RED)
-        dot.move_to(axes.i2gp(cur_x, graph))
+        dot.move_to(self.axes.i2gp(cur_x, graph))
         self.play(FadeIn(dot, scale=0.5))
 
         x_tracker = ValueTracker(cur_x)
-        f_always(dot.move_to, lambda: axes.i2gp(x_tracker.get_value(), graph))
+        f_always(dot.move_to, lambda: self.axes.i2gp(x_tracker.get_value(), graph))
 
         for step in range(self.steps):
             derivative, step_value = self.gradient_descent(cur_x, step)
             if abs(derivative) < 5e-3:  # movements are essentially invisible at this point
+                dot.set_color(GREEN)
+                self.wait(3)  # give a bit of extra buffer time
                 break
 
             derivative = round(derivative, ndigits=5)
             step_value = round(step_value, ndigits=5)
 
-            derivative_text = Text(f"Derivative = {derivative}\nStep = {step_value}", font_size=40, font="serif",
-                                   color=GREEN)
-            derivative_text.move_to(dot)
-            derivative_text.shift(np.array([0, 1, 0]))
-            self.play(Write(derivative_text, run_time=1))
-            self.wait(0.5)
+            speedup = 0.2 * (max(0, step - 2) / self.steps)**0.5  # speedup increases quickly, then slows down
+            if self.show_derivative:
+                derivative_text = Text(f"Derivative = {derivative}\nStep = {step_value}", font_size=40, font="serif",
+                                       color=GREEN)
+                derivative_text.move_to(dot)
+                derivative_text.shift(np.array([0, 1, 0]))
+                self.play(Write(derivative_text, run_time=1))
+                self.wait(0.5 - speedup)
 
-            cur_x += step_value
-            self.play(x_tracker.animate.set_value(cur_x), FadeOut(derivative_text), run_time=0.6)
+                cur_x += step_value
+                self.play(x_tracker.animate.set_value(cur_x), FadeOut(derivative_text), run_time=0.6 - speedup)
+            else:
+                cur_x += step_value
+                self.play(x_tracker.animate.set_value(cur_x), run_time=0.6 - speedup)
+
             self.wait()
 
-        dot.set_color(GREEN)
-        self.wait()
 
     @abstractmethod
     def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
