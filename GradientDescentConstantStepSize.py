@@ -3,9 +3,9 @@ from GradientDescentBase import GradientDescentBase
 
 
 class GradientDescentConstantStepSize(GradientDescentBase):
-    def gradient_descent(self, x: float, step: int) -> float:
+    def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
         derivative = (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)
-        return -derivative
+        return derivative, -derivative
 
 
 def main():

@@ -8,12 +8,12 @@ class GradientDescentMomentum(GradientDescentBase):
         self.momentum = momentum
         self.prev_dx = None
 
-    def gradient_descent(self, x: float, step: int) -> float:
+    def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
         derivative = (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)
 
         dx = -derivative if not self.prev_dx else -derivative + (self.prev_dx * self.momentum)
         self.prev_dx = dx
-        return dx
+        return derivative, dx
 
 
 def main():

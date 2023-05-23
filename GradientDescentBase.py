@@ -39,13 +39,28 @@ class GradientDescentBase(Scene, metaclass=ABCMeta):
         f_always(dot.move_to, lambda: axes.i2gp(x_tracker.get_value(), graph))
 
         for step in range(self.steps):
-            cur_x += self.gradient_descent(cur_x, step)
-            self.play(x_tracker.animate.set_value(cur_x), run_time=0.5)
+            derivative, step_value = self.gradient_descent(cur_x, step)
+            if abs(derivative) < 5e-3:  # movements are essentially invisible at this point
+                break
 
-        self.wait()
+            derivative = round(derivative, ndigits=5)
+            step_value = round(step_value, ndigits=5)
+
+            derivative_text = Text(f"Derivative = {derivative}\nStep = {step_value}", font_size=40, font="serif", color=GREEN)
+            derivative_text.move_to(dot)
+            derivative_text.shift(np.array([0, 1, 0]))
+            self.play(Write(derivative_text, run_time=1))
+            self.wait(0.5)
+
+            cur_x += step_value
+            self.play(x_tracker.animate.set_value(cur_x), run_time=0.8)
+            self.play(FadeOut(derivative_text))
+            self.wait()
+
+        dot.set_color(GREEN)
 
     @abstractmethod
-    def gradient_descent(self, x: float, step: int) -> float:
+    def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
         """
         Takes an x-value and returns how much to step in the x direction.
         Should implement a gradient descent method that works on self.function
