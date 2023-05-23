@@ -7,13 +7,16 @@ from GradientDescentBase import GradientDescentBase
 
 
 class GradientDescentConstantStepSize(GradientDescentBase):
+    def __init__(self):
+        super().__init__(*TWO_MINIMA_GRAPH)
+
     def gradient_descent(self, x: float, step: int) -> tuple[float, float]:
         derivative = (self.function(x + self.dx) - self.function(x - self.dx)) / (2 * self.dx)
         return derivative, -derivative
 
 
 def main():
-    GradientDescentConstantStepSize(*TWO_MINIMA_GRAPH).run()
+    GradientDescentConstantStepSize().run()
 
 
 if __name__ == "__main__":

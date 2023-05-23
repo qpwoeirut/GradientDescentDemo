@@ -7,9 +7,8 @@ from GradientDescentBase import GradientDescentBase
 
 
 class GradientDescentMomentum(GradientDescentBase):
-    def __init__(self, zeros: list[float] = RANDOM_GRAPH[0], coef: float = RANDOM_GRAPH[1], dx: float = 1e-6,
-                 start_x: float = 1, steps: int = 20, momentum: float = 0.4, **kwargs):
-        super().__init__(zeros, coef, dx, start_x, steps, noisy=True, **kwargs)
+    def __init__(self, momentum: float = 0.4):
+        super().__init__(*RANDOM_GRAPH, noisy=True)
         self.momentum = momentum
         self.prev_dx = None
 
@@ -22,7 +21,7 @@ class GradientDescentMomentum(GradientDescentBase):
 
 
 def main():
-    GradientDescentMomentum(*RANDOM_GRAPH).run()
+    GradientDescentMomentum().run()
 
 
 if __name__ == "__main__":
