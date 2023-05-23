@@ -1,3 +1,6 @@
+import sys, os
+sys.path.append(os.getcwd())  # running manimgl from command line breaks imports on Stanley's computer w/o this line
+
 from example_graphs import *
 from GradientDescentBase import GradientDescentBase
 
